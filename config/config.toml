@@ -1,0 +1,10 @@
+
+version = "1.0.0"
+
+[s3-info]
+bucket = "bucket-info"
+prefix = "Prod/Prefix"
+
+
+[sqs-info]
+sqs-url = "sqs url"
