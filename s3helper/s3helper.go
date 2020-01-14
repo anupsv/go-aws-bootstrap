@@ -13,12 +13,10 @@ import (
 
 type S3helper struct {
 	S3Info                config.S3Info
-	localFileDownloadPath string
 }
 
 type S3Helpers struct {
 	S3Info                config.S3Info
-	localFileDownloadPath string
 	awsSession            *session.Session
 }
 
@@ -26,16 +24,15 @@ func (s3helper S3helper) init(awsConfig *aws.Config) (*S3Helpers, error) {
 
 	s3Helpers := S3Helpers{}
 	s3Helpers.S3Info = s3helper.S3Info
-	s3Helpers.localFileDownloadPath = s3helper.localFileDownloadPath
 	awsSession, err := session.NewSession(awsConfig)
 	s3Helpers.awsSession = awsSession
 
 	return &s3Helpers, err
 }
 
-func (s3helpers S3Helpers) downloadFromS3(awsConfig *aws.Config) (int64, error) {
+func (s3helpers S3Helpers) downloadFromS3(localFileDownloadPath string, awsConfig *aws.Config) (int64, error) {
 
-	file, err := os.Create(s3helpers.localFileDownloadPath)
+	file, err := os.Create(localFileDownloadPath)
 	if err != nil {
 		return -1, err
 	}
