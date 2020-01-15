@@ -69,10 +69,32 @@ func (s3helpers S3Helpers) uploadFileToS3(absoluteLocalFilePath string, s3FullKe
 
 	reader, writer := io.Pipe()
 
-	go func() {
-		io.Copy(writer, file)
-		file.Close()
-		writer.Close()
+	go func() <-chan error {
+
+		goRoutineOut := make(chan error)
+		_, err := io.Copy(writer, file)
+
+		if err != nil {
+			goRoutineOut <- err
+			return goRoutineOut
+		}
+
+		err = file.Close()
+
+		if err != nil {
+			goRoutineOut <- err
+			return goRoutineOut
+		}
+
+		err = writer.Close()
+
+		if err != nil {
+			goRoutineOut <- err
+			return goRoutineOut
+		}
+
+		goRoutineOut <- nil
+		return goRoutineOut
 	}()
 
 	uploader := s3manager.NewUploader(s3helpers.awsSession)
